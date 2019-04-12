@@ -1,0 +1,56 @@
+type Hospital {
+    id: ID! @unique
+    createdAt: DateTime!
+    name: String!
+    location: Location! @relation(name: "Location", onDelete: CASCADE)
+    reviews: [Review!]! @relation(name: "Reviews", onDelete: CASCADE)
+    votes: [Vote!]!     @relation(name: "Votes", onDelete: CASCADE)
+    photoUrl: String
+    status: String
+    contact: String
+    email: String
+    website: String
+}
+
+type Location {
+    id: ID! @unique
+    address: String
+    city: String!
+    region: String!
+    latitude: Float!
+    longitude: Float!
+}
+
+type User {
+    id: ID! @unique
+    name: String!
+    email: String! @unique
+    password: String!
+    status: Role! @default(value: "DOCTOR")
+    institution: Hospital
+    isVerified: Boolean! @default(value: "false")
+    reviews: [Review!]! 
+    votes: [Vote!]!  
+}
+
+type Review {
+    id: ID! @unique
+    comment: String!
+    user: User! 
+    hospital: Hospital! @relation(name: "Reviews")
+}
+
+type Vote {
+    id: ID! @unique
+    hospital: Hospital!  @relation(name: "Votes")
+    user: User! 
+}
+
+
+enum Role {
+    DOCTOR,
+    NURSE,
+    MIDWIFE,
+    PATIENT,
+    PASSER
+}

@@ -1,0 +1,78 @@
+type Query {
+    hospital(id: ID!): Hospital!
+    hospitals: [Hospital!]!,
+    locations: [Location!]!
+    hospitalsByCity(city: String): [Hospital!]!
+    nearestHospital(latitude: Float!, longitude:Float!): Hospital
+}
+type Mutation {
+    newHospital(name: String!, locationId: ID!,website:String,photoUrl:String,
+                status: String, contact: String, email: String): Hospital!
+    updateHospital(id: ID!, name: String, photoUrl: String, photoUrl:String,website:String,
+                    status: String, contact: String, email: String): Hospital!
+    deleteHospital(id: ID): Hospital!
+    newLocation(address: String, city: String!, 
+        region: String!, longitude:Float!, latitude:Float!): Location!
+    updateLocation(id:ID, address: String, city: String, 
+        region: String, longitude:Float, latitude:Float): Location!
+    signup(name: String!, email: String!, password: String!, institution: ID): AuthPayload
+    login(email: String!, password:String!): AuthPayload
+    newReview(comment: String, hospital: ID!): Review!
+    newVote(hospital: ID!): Vote!
+    
+}
+type Hospital {
+    id: ID!
+    name: String!
+    location: Location!
+    reviews: [Review]!
+    votes: [Vote!]!
+    photoUrl: String,
+    status: String,
+    contact: String,
+    email: String,
+    website: String
+}
+type Location {
+    id: ID!
+    address: String
+    city: String!
+    region: String!
+    latitude: Float!
+    longitude: Float!
+}
+
+type AuthPayload {
+    token: String,
+    user: User
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    password: String!
+    status: Role
+    institution: Hospital
+    isVerified: Boolean 
+}
+
+enum Role {
+    DOCTOR,
+    NURSE,
+    MIDWIFE,
+    PATIENT,
+    PASSER
+}
+
+type Review {
+    id: ID!
+    comment: String
+    user: User!
+    hospital: Hospital!
+}
+type Vote {
+    id: ID!
+    hospital: Hospital!
+    user: User!
+}
