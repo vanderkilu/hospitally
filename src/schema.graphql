@@ -22,6 +22,10 @@ type Mutation {
     newChat(message: String!): Chat!
     
 }
+type Subscription {
+    newChat: Chat!
+}
+
 type Hospital {
     id: ID!
     name: String!

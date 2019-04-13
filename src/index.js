@@ -7,10 +7,12 @@ const Review = require('./resolvers/Review')
 const Vote = require('./resolvers/Vote')
 const User = require('./resolvers/User')
 const Chat = require('./resolvers/Chat')
+const Subscription = require('./resolvers/Subscription')
 
 const resolvers = {
     Query,
     Mutation,
+    Subscription,
     Hospital,
     Review,
     Vote,
