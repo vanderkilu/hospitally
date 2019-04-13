@@ -6,6 +6,7 @@ const Query = require('./resolvers/Query')
 const Review = require('./resolvers/Review')
 const Vote = require('./resolvers/Vote')
 const User = require('./resolvers/User')
+const Chat = require('./resolvers/Chat')
 
 const resolvers = {
     Query,
@@ -13,7 +14,8 @@ const resolvers = {
     Hospital,
     Review,
     Vote,
-    User
+    User,
+    Chat
 }
 
 const opts = {

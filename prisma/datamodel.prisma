@@ -46,6 +46,13 @@ type Vote {
     user: User! 
 }
 
+type Chat {
+    id: ID! @unique
+    message: String!
+    postedBy: User!
+    createdAt: DateTime!
+}
+
 
 enum Role {
     DOCTOR,

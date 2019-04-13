@@ -14,6 +14,7 @@ export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
   U[keyof U];
 
 export interface Exists {
+  chat: (where?: ChatWhereInput) => Promise<boolean>;
   hospital: (where?: HospitalWhereInput) => Promise<boolean>;
   location: (where?: LocationWhereInput) => Promise<boolean>;
   review: (where?: ReviewWhereInput) => Promise<boolean>;
@@ -40,6 +41,29 @@ export interface Prisma {
    * Queries
    */
 
+  chat: (where: ChatWhereUniqueInput) => ChatPromise;
+  chats: (
+    args?: {
+      where?: ChatWhereInput;
+      orderBy?: ChatOrderByInput;
+      skip?: Int;
+      after?: String;
+      before?: String;
+      first?: Int;
+      last?: Int;
+    }
+  ) => FragmentableArray<Chat>;
+  chatsConnection: (
+    args?: {
+      where?: ChatWhereInput;
+      orderBy?: ChatOrderByInput;
+      skip?: Int;
+      after?: String;
+      before?: String;
+      first?: Int;
+      last?: Int;
+    }
+  ) => ChatConnectionPromise;
   hospital: (where: HospitalWhereUniqueInput) => HospitalPromise;
   hospitals: (
     args?: {
@@ -161,6 +185,22 @@ export interface Prisma {
    * Mutations
    */
 
+  createChat: (data: ChatCreateInput) => ChatPromise;
+  updateChat: (
+    args: { data: ChatUpdateInput; where: ChatWhereUniqueInput }
+  ) => ChatPromise;
+  updateManyChats: (
+    args: { data: ChatUpdateManyMutationInput; where?: ChatWhereInput }
+  ) => BatchPayloadPromise;
+  upsertChat: (
+    args: {
+      where: ChatWhereUniqueInput;
+      create: ChatCreateInput;
+      update: ChatUpdateInput;
+    }
+  ) => ChatPromise;
+  deleteChat: (where: ChatWhereUniqueInput) => ChatPromise;
+  deleteManyChats: (where?: ChatWhereInput) => BatchPayloadPromise;
   createHospital: (data: HospitalCreateInput) => HospitalPromise;
   updateHospital: (
     args: { data: HospitalUpdateInput; where: HospitalWhereUniqueInput }
@@ -247,6 +287,9 @@ export interface Prisma {
 }
 
 export interface Subscription {
+  chat: (
+    where?: ChatSubscriptionWhereInput
+  ) => ChatSubscriptionPayloadSubscription;
   hospital: (
     where?: HospitalSubscriptionWhereInput
   ) => HospitalSubscriptionPayloadSubscription;
@@ -272,8 +315,6 @@ export interface ClientConstructor<T> {
  * Types
  */
 
-export type Role = "DOCTOR" | "NURSE" | "MIDWIFE" | "PATIENT" | "PASSER";
-
 export type ReviewOrderByInput =
   | "id_ASC"
   | "id_DESC"
@@ -287,6 +328,16 @@ export type ReviewOrderByInput =
 export type VoteOrderByInput =
   | "id_ASC"
   | "id_DESC"
+  | "createdAt_ASC"
+  | "createdAt_DESC"
+  | "updatedAt_ASC"
+  | "updatedAt_DESC";
+
+export type ChatOrderByInput =
+  | "id_ASC"
+  | "id_DESC"
+  | "message_ASC"
+  | "message_DESC"
   | "createdAt_ASC"
   | "createdAt_DESC"
   | "updatedAt_ASC"
@@ -311,6 +362,8 @@ export type HospitalOrderByInput =
   | "website_DESC"
   | "updatedAt_ASC"
   | "updatedAt_DESC";
+
+export type Role = "DOCTOR" | "NURSE" | "MIDWIFE" | "PATIENT" | "PASSER";
 
 export type LocationOrderByInput =
   | "id_ASC"
@@ -350,344 +403,14 @@ export type UserOrderByInput =
 
 export type MutationType = "CREATED" | "UPDATED" | "DELETED";
 
-export interface LocationUpdateDataInput {
-  address?: String;
-  city?: String;
-  region?: String;
-  latitude?: Float;
-  longitude?: Float;
+export interface ChatUpdateInput {
+  message?: String;
+  postedBy?: UserUpdateOneRequiredInput;
 }
 
-export type HospitalWhereUniqueInput = AtLeastOne<{
+export type ChatWhereUniqueInput = AtLeastOne<{
   id: ID_Input;
 }>;
-
-export interface ReviewUpdateWithoutHospitalDataInput {
-  comment?: String;
-  user?: UserUpdateOneRequiredWithoutReviewsInput;
-}
-
-export interface UserWhereInput {
-  id?: ID_Input;
-  id_not?: ID_Input;
-  id_in?: ID_Input[] | ID_Input;
-  id_not_in?: ID_Input[] | ID_Input;
-  id_lt?: ID_Input;
-  id_lte?: ID_Input;
-  id_gt?: ID_Input;
-  id_gte?: ID_Input;
-  id_contains?: ID_Input;
-  id_not_contains?: ID_Input;
-  id_starts_with?: ID_Input;
-  id_not_starts_with?: ID_Input;
-  id_ends_with?: ID_Input;
-  id_not_ends_with?: ID_Input;
-  name?: String;
-  name_not?: String;
-  name_in?: String[] | String;
-  name_not_in?: String[] | String;
-  name_lt?: String;
-  name_lte?: String;
-  name_gt?: String;
-  name_gte?: String;
-  name_contains?: String;
-  name_not_contains?: String;
-  name_starts_with?: String;
-  name_not_starts_with?: String;
-  name_ends_with?: String;
-  name_not_ends_with?: String;
-  email?: String;
-  email_not?: String;
-  email_in?: String[] | String;
-  email_not_in?: String[] | String;
-  email_lt?: String;
-  email_lte?: String;
-  email_gt?: String;
-  email_gte?: String;
-  email_contains?: String;
-  email_not_contains?: String;
-  email_starts_with?: String;
-  email_not_starts_with?: String;
-  email_ends_with?: String;
-  email_not_ends_with?: String;
-  password?: String;
-  password_not?: String;
-  password_in?: String[] | String;
-  password_not_in?: String[] | String;
-  password_lt?: String;
-  password_lte?: String;
-  password_gt?: String;
-  password_gte?: String;
-  password_contains?: String;
-  password_not_contains?: String;
-  password_starts_with?: String;
-  password_not_starts_with?: String;
-  password_ends_with?: String;
-  password_not_ends_with?: String;
-  status?: Role;
-  status_not?: Role;
-  status_in?: Role[] | Role;
-  status_not_in?: Role[] | Role;
-  institution?: HospitalWhereInput;
-  isVerified?: Boolean;
-  isVerified_not?: Boolean;
-  reviews_every?: ReviewWhereInput;
-  reviews_some?: ReviewWhereInput;
-  reviews_none?: ReviewWhereInput;
-  votes_every?: VoteWhereInput;
-  votes_some?: VoteWhereInput;
-  votes_none?: VoteWhereInput;
-  AND?: UserWhereInput[] | UserWhereInput;
-  OR?: UserWhereInput[] | UserWhereInput;
-  NOT?: UserWhereInput[] | UserWhereInput;
-}
-
-export interface UserUpdateOneRequiredWithoutReviewsInput {
-  create?: UserCreateWithoutReviewsInput;
-  update?: UserUpdateWithoutReviewsDataInput;
-  upsert?: UserUpsertWithoutReviewsInput;
-  connect?: UserWhereUniqueInput;
-}
-
-export interface LocationWhereInput {
-  id?: ID_Input;
-  id_not?: ID_Input;
-  id_in?: ID_Input[] | ID_Input;
-  id_not_in?: ID_Input[] | ID_Input;
-  id_lt?: ID_Input;
-  id_lte?: ID_Input;
-  id_gt?: ID_Input;
-  id_gte?: ID_Input;
-  id_contains?: ID_Input;
-  id_not_contains?: ID_Input;
-  id_starts_with?: ID_Input;
-  id_not_starts_with?: ID_Input;
-  id_ends_with?: ID_Input;
-  id_not_ends_with?: ID_Input;
-  address?: String;
-  address_not?: String;
-  address_in?: String[] | String;
-  address_not_in?: String[] | String;
-  address_lt?: String;
-  address_lte?: String;
-  address_gt?: String;
-  address_gte?: String;
-  address_contains?: String;
-  address_not_contains?: String;
-  address_starts_with?: String;
-  address_not_starts_with?: String;
-  address_ends_with?: String;
-  address_not_ends_with?: String;
-  city?: String;
-  city_not?: String;
-  city_in?: String[] | String;
-  city_not_in?: String[] | String;
-  city_lt?: String;
-  city_lte?: String;
-  city_gt?: String;
-  city_gte?: String;
-  city_contains?: String;
-  city_not_contains?: String;
-  city_starts_with?: String;
-  city_not_starts_with?: String;
-  city_ends_with?: String;
-  city_not_ends_with?: String;
-  region?: String;
-  region_not?: String;
-  region_in?: String[] | String;
-  region_not_in?: String[] | String;
-  region_lt?: String;
-  region_lte?: String;
-  region_gt?: String;
-  region_gte?: String;
-  region_contains?: String;
-  region_not_contains?: String;
-  region_starts_with?: String;
-  region_not_starts_with?: String;
-  region_ends_with?: String;
-  region_not_ends_with?: String;
-  latitude?: Float;
-  latitude_not?: Float;
-  latitude_in?: Float[] | Float;
-  latitude_not_in?: Float[] | Float;
-  latitude_lt?: Float;
-  latitude_lte?: Float;
-  latitude_gt?: Float;
-  latitude_gte?: Float;
-  longitude?: Float;
-  longitude_not?: Float;
-  longitude_in?: Float[] | Float;
-  longitude_not_in?: Float[] | Float;
-  longitude_lt?: Float;
-  longitude_lte?: Float;
-  longitude_gt?: Float;
-  longitude_gte?: Float;
-  AND?: LocationWhereInput[] | LocationWhereInput;
-  OR?: LocationWhereInput[] | LocationWhereInput;
-  NOT?: LocationWhereInput[] | LocationWhereInput;
-}
-
-export interface HospitalCreateOneWithoutVotesInput {
-  create?: HospitalCreateWithoutVotesInput;
-  connect?: HospitalWhereUniqueInput;
-}
-
-export interface HospitalUpsertNestedInput {
-  update: HospitalUpdateDataInput;
-  create: HospitalCreateInput;
-}
-
-export interface HospitalCreateWithoutVotesInput {
-  name: String;
-  location: LocationCreateOneInput;
-  reviews?: ReviewCreateManyWithoutHospitalInput;
-  photoUrl?: String;
-  status?: String;
-  contact?: String;
-  email?: String;
-  website?: String;
-}
-
-export interface UserUpdateWithoutReviewsDataInput {
-  name?: String;
-  email?: String;
-  password?: String;
-  status?: Role;
-  institution?: HospitalUpdateOneInput;
-  isVerified?: Boolean;
-  votes?: VoteUpdateManyWithoutUserInput;
-}
-
-export interface VoteCreateManyWithoutHospitalInput {
-  create?: VoteCreateWithoutHospitalInput[] | VoteCreateWithoutHospitalInput;
-  connect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
-}
-
-export interface UserSubscriptionWhereInput {
-  mutation_in?: MutationType[] | MutationType;
-  updatedFields_contains?: String;
-  updatedFields_contains_every?: String[] | String;
-  updatedFields_contains_some?: String[] | String;
-  node?: UserWhereInput;
-  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
-  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
-  NOT?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
-}
-
-export interface VoteCreateWithoutHospitalInput {
-  user: UserCreateOneWithoutVotesInput;
-}
-
-export interface LocationSubscriptionWhereInput {
-  mutation_in?: MutationType[] | MutationType;
-  updatedFields_contains?: String;
-  updatedFields_contains_every?: String[] | String;
-  updatedFields_contains_some?: String[] | String;
-  node?: LocationWhereInput;
-  AND?: LocationSubscriptionWhereInput[] | LocationSubscriptionWhereInput;
-  OR?: LocationSubscriptionWhereInput[] | LocationSubscriptionWhereInput;
-  NOT?: LocationSubscriptionWhereInput[] | LocationSubscriptionWhereInput;
-}
-
-export interface UserCreateOneWithoutVotesInput {
-  create?: UserCreateWithoutVotesInput;
-  connect?: UserWhereUniqueInput;
-}
-
-export interface VoteUpdateInput {
-  hospital?: HospitalUpdateOneRequiredWithoutVotesInput;
-  user?: UserUpdateOneRequiredWithoutVotesInput;
-}
-
-export interface UserCreateWithoutVotesInput {
-  name: String;
-  email: String;
-  password: String;
-  status?: Role;
-  institution?: HospitalCreateOneInput;
-  isVerified?: Boolean;
-  reviews?: ReviewCreateManyWithoutUserInput;
-}
-
-export interface UserUpdateManyMutationInput {
-  name?: String;
-  email?: String;
-  password?: String;
-  status?: Role;
-  isVerified?: Boolean;
-}
-
-export interface ReviewCreateManyWithoutUserInput {
-  create?: ReviewCreateWithoutUserInput[] | ReviewCreateWithoutUserInput;
-  connect?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
-}
-
-export interface UserCreateInput {
-  name: String;
-  email: String;
-  password: String;
-  status?: Role;
-  institution?: HospitalCreateOneInput;
-  isVerified?: Boolean;
-  reviews?: ReviewCreateManyWithoutUserInput;
-  votes?: VoteCreateManyWithoutUserInput;
-}
-
-export interface ReviewCreateWithoutUserInput {
-  comment: String;
-  hospital: HospitalCreateOneWithoutReviewsInput;
-}
-
-export interface ReviewUpdateManyMutationInput {
-  comment?: String;
-}
-
-export interface HospitalCreateOneWithoutReviewsInput {
-  create?: HospitalCreateWithoutReviewsInput;
-  connect?: HospitalWhereUniqueInput;
-}
-
-export interface ReviewCreateInput {
-  comment: String;
-  user: UserCreateOneWithoutReviewsInput;
-  hospital: HospitalCreateOneWithoutReviewsInput;
-}
-
-export interface HospitalCreateWithoutReviewsInput {
-  name: String;
-  location: LocationCreateOneInput;
-  votes?: VoteCreateManyWithoutHospitalInput;
-  photoUrl?: String;
-  status?: String;
-  contact?: String;
-  email?: String;
-  website?: String;
-}
-
-export type ReviewWhereUniqueInput = AtLeastOne<{
-  id: ID_Input;
-}>;
-
-export interface HospitalUpdateInput {
-  name?: String;
-  location?: LocationUpdateOneRequiredInput;
-  reviews?: ReviewUpdateManyWithoutHospitalInput;
-  votes?: VoteUpdateManyWithoutHospitalInput;
-  photoUrl?: String;
-  status?: String;
-  contact?: String;
-  email?: String;
-  website?: String;
-}
-
-export interface HospitalUpdateManyMutationInput {
-  name?: String;
-  photoUrl?: String;
-  status?: String;
-  contact?: String;
-  email?: String;
-  website?: String;
-}
 
 export interface LocationUpdateOneRequiredInput {
   create?: LocationCreateInput;
@@ -696,83 +419,48 @@ export interface LocationUpdateOneRequiredInput {
   connect?: LocationWhereUniqueInput;
 }
 
-export type UserWhereUniqueInput = AtLeastOne<{
-  id: ID_Input;
-  email?: String;
-}>;
-
-export interface VoteUpdateManyWithoutUserInput {
-  create?: VoteCreateWithoutUserInput[] | VoteCreateWithoutUserInput;
-  delete?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
-  connect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
-  set?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
-  disconnect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
-  update?:
-    | VoteUpdateWithWhereUniqueWithoutUserInput[]
-    | VoteUpdateWithWhereUniqueWithoutUserInput;
-  upsert?:
-    | VoteUpsertWithWhereUniqueWithoutUserInput[]
-    | VoteUpsertWithWhereUniqueWithoutUserInput;
-  deleteMany?: VoteScalarWhereInput[] | VoteScalarWhereInput;
+export interface ReviewWhereInput {
+  id?: ID_Input;
+  id_not?: ID_Input;
+  id_in?: ID_Input[] | ID_Input;
+  id_not_in?: ID_Input[] | ID_Input;
+  id_lt?: ID_Input;
+  id_lte?: ID_Input;
+  id_gt?: ID_Input;
+  id_gte?: ID_Input;
+  id_contains?: ID_Input;
+  id_not_contains?: ID_Input;
+  id_starts_with?: ID_Input;
+  id_not_starts_with?: ID_Input;
+  id_ends_with?: ID_Input;
+  id_not_ends_with?: ID_Input;
+  comment?: String;
+  comment_not?: String;
+  comment_in?: String[] | String;
+  comment_not_in?: String[] | String;
+  comment_lt?: String;
+  comment_lte?: String;
+  comment_gt?: String;
+  comment_gte?: String;
+  comment_contains?: String;
+  comment_not_contains?: String;
+  comment_starts_with?: String;
+  comment_not_starts_with?: String;
+  comment_ends_with?: String;
+  comment_not_ends_with?: String;
+  user?: UserWhereInput;
+  hospital?: HospitalWhereInput;
+  AND?: ReviewWhereInput[] | ReviewWhereInput;
+  OR?: ReviewWhereInput[] | ReviewWhereInput;
+  NOT?: ReviewWhereInput[] | ReviewWhereInput;
 }
 
-export interface VoteUpsertWithWhereUniqueWithoutUserInput {
-  where: VoteWhereUniqueInput;
-  update: VoteUpdateWithoutUserDataInput;
-  create: VoteCreateWithoutUserInput;
-}
-
-export interface LocationUpsertNestedInput {
-  update: LocationUpdateDataInput;
-  create: LocationCreateInput;
-}
-
-export interface HospitalUpdateWithoutVotesDataInput {
-  name?: String;
-  location?: LocationUpdateOneRequiredInput;
-  reviews?: ReviewUpdateManyWithoutHospitalInput;
-  photoUrl?: String;
-  status?: String;
-  contact?: String;
-  email?: String;
-  website?: String;
-}
-
-export interface ReviewUpdateManyWithoutHospitalInput {
-  create?:
-    | ReviewCreateWithoutHospitalInput[]
-    | ReviewCreateWithoutHospitalInput;
-  delete?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
-  connect?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
-  set?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
-  disconnect?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
-  update?:
-    | ReviewUpdateWithWhereUniqueWithoutHospitalInput[]
-    | ReviewUpdateWithWhereUniqueWithoutHospitalInput;
-  upsert?:
-    | ReviewUpsertWithWhereUniqueWithoutHospitalInput[]
-    | ReviewUpsertWithWhereUniqueWithoutHospitalInput;
-  deleteMany?: ReviewScalarWhereInput[] | ReviewScalarWhereInput;
-  updateMany?:
-    | ReviewUpdateManyWithWhereNestedInput[]
-    | ReviewUpdateManyWithWhereNestedInput;
-}
-
-export interface HospitalUpdateOneRequiredWithoutVotesInput {
-  create?: HospitalCreateWithoutVotesInput;
-  update?: HospitalUpdateWithoutVotesDataInput;
-  upsert?: HospitalUpsertWithoutVotesInput;
-  connect?: HospitalWhereUniqueInput;
-}
-
-export interface ReviewUpdateWithWhereUniqueWithoutHospitalInput {
-  where: ReviewWhereUniqueInput;
-  data: ReviewUpdateWithoutHospitalDataInput;
-}
-
-export interface VoteUpdateWithWhereUniqueWithoutUserInput {
-  where: VoteWhereUniqueInput;
-  data: VoteUpdateWithoutUserDataInput;
+export interface LocationUpdateDataInput {
+  address?: String;
+  city?: String;
+  region?: String;
+  latitude?: Float;
+  longitude?: Float;
 }
 
 export interface HospitalWhereInput {
@@ -894,16 +582,9 @@ export interface HospitalWhereInput {
   NOT?: HospitalWhereInput[] | HospitalWhereInput;
 }
 
-export interface HospitalCreateInput {
-  name: String;
-  location: LocationCreateOneInput;
-  reviews?: ReviewCreateManyWithoutHospitalInput;
-  votes?: VoteCreateManyWithoutHospitalInput;
-  photoUrl?: String;
-  status?: String;
-  contact?: String;
-  email?: String;
-  website?: String;
+export interface LocationUpsertNestedInput {
+  update: LocationUpdateDataInput;
+  create: LocationCreateInput;
 }
 
 export interface VoteWhereInput {
@@ -928,15 +609,72 @@ export interface VoteWhereInput {
   NOT?: VoteWhereInput[] | VoteWhereInput;
 }
 
-export interface LocationCreateInput {
-  address?: String;
-  city: String;
-  region: String;
-  latitude: Float;
-  longitude: Float;
+export interface UserCreateWithoutReviewsInput {
+  name: String;
+  email: String;
+  password: String;
+  status?: Role;
+  institution?: HospitalCreateOneInput;
+  isVerified?: Boolean;
+  votes?: VoteCreateManyWithoutUserInput;
 }
 
-export interface ReviewWhereInput {
+export interface UserUpdateWithoutVotesDataInput {
+  name?: String;
+  email?: String;
+  password?: String;
+  status?: Role;
+  institution?: HospitalUpdateOneInput;
+  isVerified?: Boolean;
+  reviews?: ReviewUpdateManyWithoutUserInput;
+}
+
+export interface VoteCreateManyWithoutUserInput {
+  create?: VoteCreateWithoutUserInput[] | VoteCreateWithoutUserInput;
+  connect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+}
+
+export interface ReviewUpdateManyWithoutHospitalInput {
+  create?:
+    | ReviewCreateWithoutHospitalInput[]
+    | ReviewCreateWithoutHospitalInput;
+  delete?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
+  connect?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
+  set?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
+  disconnect?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
+  update?:
+    | ReviewUpdateWithWhereUniqueWithoutHospitalInput[]
+    | ReviewUpdateWithWhereUniqueWithoutHospitalInput;
+  upsert?:
+    | ReviewUpsertWithWhereUniqueWithoutHospitalInput[]
+    | ReviewUpsertWithWhereUniqueWithoutHospitalInput;
+  deleteMany?: ReviewScalarWhereInput[] | ReviewScalarWhereInput;
+  updateMany?:
+    | ReviewUpdateManyWithWhereNestedInput[]
+    | ReviewUpdateManyWithWhereNestedInput;
+}
+
+export interface VoteCreateWithoutUserInput {
+  hospital: HospitalCreateOneWithoutVotesInput;
+}
+
+export interface UserSubscriptionWhereInput {
+  mutation_in?: MutationType[] | MutationType;
+  updatedFields_contains?: String;
+  updatedFields_contains_every?: String[] | String;
+  updatedFields_contains_some?: String[] | String;
+  node?: UserWhereInput;
+  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
+  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
+  NOT?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
+}
+
+export interface HospitalCreateOneWithoutVotesInput {
+  create?: HospitalCreateWithoutVotesInput;
+  connect?: HospitalWhereUniqueInput;
+}
+
+export interface ChatWhereInput {
   id?: ID_Input;
   id_not?: ID_Input;
   id_in?: ID_Input[] | ID_Input;
@@ -951,30 +689,192 @@ export interface ReviewWhereInput {
   id_not_starts_with?: ID_Input;
   id_ends_with?: ID_Input;
   id_not_ends_with?: ID_Input;
-  comment?: String;
-  comment_not?: String;
-  comment_in?: String[] | String;
-  comment_not_in?: String[] | String;
-  comment_lt?: String;
-  comment_lte?: String;
-  comment_gt?: String;
-  comment_gte?: String;
-  comment_contains?: String;
-  comment_not_contains?: String;
-  comment_starts_with?: String;
-  comment_not_starts_with?: String;
-  comment_ends_with?: String;
-  comment_not_ends_with?: String;
-  user?: UserWhereInput;
-  hospital?: HospitalWhereInput;
-  AND?: ReviewWhereInput[] | ReviewWhereInput;
-  OR?: ReviewWhereInput[] | ReviewWhereInput;
-  NOT?: ReviewWhereInput[] | ReviewWhereInput;
+  message?: String;
+  message_not?: String;
+  message_in?: String[] | String;
+  message_not_in?: String[] | String;
+  message_lt?: String;
+  message_lte?: String;
+  message_gt?: String;
+  message_gte?: String;
+  message_contains?: String;
+  message_not_contains?: String;
+  message_starts_with?: String;
+  message_not_starts_with?: String;
+  message_ends_with?: String;
+  message_not_ends_with?: String;
+  postedBy?: UserWhereInput;
+  createdAt?: DateTimeInput;
+  createdAt_not?: DateTimeInput;
+  createdAt_in?: DateTimeInput[] | DateTimeInput;
+  createdAt_not_in?: DateTimeInput[] | DateTimeInput;
+  createdAt_lt?: DateTimeInput;
+  createdAt_lte?: DateTimeInput;
+  createdAt_gt?: DateTimeInput;
+  createdAt_gte?: DateTimeInput;
+  AND?: ChatWhereInput[] | ChatWhereInput;
+  OR?: ChatWhereInput[] | ChatWhereInput;
+  NOT?: ChatWhereInput[] | ChatWhereInput;
 }
 
-export interface ReviewCreateWithoutHospitalInput {
+export interface HospitalCreateWithoutVotesInput {
+  name: String;
+  location: LocationCreateOneInput;
+  reviews?: ReviewCreateManyWithoutHospitalInput;
+  photoUrl?: String;
+  status?: String;
+  contact?: String;
+  email?: String;
+  website?: String;
+}
+
+export interface HospitalSubscriptionWhereInput {
+  mutation_in?: MutationType[] | MutationType;
+  updatedFields_contains?: String;
+  updatedFields_contains_every?: String[] | String;
+  updatedFields_contains_some?: String[] | String;
+  node?: HospitalWhereInput;
+  AND?: HospitalSubscriptionWhereInput[] | HospitalSubscriptionWhereInput;
+  OR?: HospitalSubscriptionWhereInput[] | HospitalSubscriptionWhereInput;
+  NOT?: HospitalSubscriptionWhereInput[] | HospitalSubscriptionWhereInput;
+}
+
+export interface VoteCreateManyWithoutHospitalInput {
+  create?: VoteCreateWithoutHospitalInput[] | VoteCreateWithoutHospitalInput;
+  connect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+}
+
+export interface VoteUpdateInput {
+  hospital?: HospitalUpdateOneRequiredWithoutVotesInput;
+  user?: UserUpdateOneRequiredWithoutVotesInput;
+}
+
+export interface VoteCreateWithoutHospitalInput {
+  user: UserCreateOneWithoutVotesInput;
+}
+
+export type HospitalWhereUniqueInput = AtLeastOne<{
+  id: ID_Input;
+}>;
+
+export interface UserCreateOneWithoutVotesInput {
+  create?: UserCreateWithoutVotesInput;
+  connect?: UserWhereUniqueInput;
+}
+
+export interface UserUpdateInput {
+  name?: String;
+  email?: String;
+  password?: String;
+  status?: Role;
+  institution?: HospitalUpdateOneInput;
+  isVerified?: Boolean;
+  reviews?: ReviewUpdateManyWithoutUserInput;
+  votes?: VoteUpdateManyWithoutUserInput;
+}
+
+export interface UserCreateWithoutVotesInput {
+  name: String;
+  email: String;
+  password: String;
+  status?: Role;
+  institution?: HospitalCreateOneInput;
+  isVerified?: Boolean;
+  reviews?: ReviewCreateManyWithoutUserInput;
+}
+
+export interface ReviewUpdateInput {
+  comment?: String;
+  user?: UserUpdateOneRequiredWithoutReviewsInput;
+  hospital?: HospitalUpdateOneRequiredWithoutReviewsInput;
+}
+
+export interface ReviewCreateManyWithoutUserInput {
+  create?: ReviewCreateWithoutUserInput[] | ReviewCreateWithoutUserInput;
+  connect?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
+}
+
+export interface ReviewCreateInput {
   comment: String;
   user: UserCreateOneWithoutReviewsInput;
+  hospital: HospitalCreateOneWithoutReviewsInput;
+}
+
+export interface ReviewCreateWithoutUserInput {
+  comment: String;
+  hospital: HospitalCreateOneWithoutReviewsInput;
+}
+
+export interface LocationUpdateInput {
+  address?: String;
+  city?: String;
+  region?: String;
+  latitude?: Float;
+  longitude?: Float;
+}
+
+export interface HospitalCreateOneWithoutReviewsInput {
+  create?: HospitalCreateWithoutReviewsInput;
+  connect?: HospitalWhereUniqueInput;
+}
+
+export type ReviewWhereUniqueInput = AtLeastOne<{
+  id: ID_Input;
+}>;
+
+export interface HospitalCreateWithoutReviewsInput {
+  name: String;
+  location: LocationCreateOneInput;
+  votes?: VoteCreateManyWithoutHospitalInput;
+  photoUrl?: String;
+  status?: String;
+  contact?: String;
+  email?: String;
+  website?: String;
+}
+
+export interface ChatUpdateManyMutationInput {
+  message?: String;
+}
+
+export interface ReviewUpdateWithoutUserDataInput {
+  comment?: String;
+  hospital?: HospitalUpdateOneRequiredWithoutReviewsInput;
+}
+
+export type UserWhereUniqueInput = AtLeastOne<{
+  id: ID_Input;
+  email?: String;
+}>;
+
+export interface UserUpdateOneRequiredInput {
+  create?: UserCreateInput;
+  update?: UserUpdateDataInput;
+  upsert?: UserUpsertNestedInput;
+  connect?: UserWhereUniqueInput;
+}
+
+export interface VoteUpsertWithWhereUniqueWithoutHospitalInput {
+  where: VoteWhereUniqueInput;
+  update: VoteUpdateWithoutHospitalDataInput;
+  create: VoteCreateWithoutHospitalInput;
+}
+
+export interface UserUpdateDataInput {
+  name?: String;
+  email?: String;
+  password?: String;
+  status?: Role;
+  institution?: HospitalUpdateOneInput;
+  isVerified?: Boolean;
+  reviews?: ReviewUpdateManyWithoutUserInput;
+  votes?: VoteUpdateManyWithoutUserInput;
+}
+
+export interface ReviewUpsertWithWhereUniqueWithoutUserInput {
+  where: ReviewWhereUniqueInput;
+  update: ReviewUpdateWithoutUserDataInput;
+  create: ReviewCreateWithoutUserInput;
 }
 
 export interface HospitalUpdateOneInput {
@@ -986,14 +886,9 @@ export interface HospitalUpdateOneInput {
   connect?: HospitalWhereUniqueInput;
 }
 
-export interface UserCreateWithoutReviewsInput {
-  name: String;
-  email: String;
-  password: String;
-  status?: Role;
-  institution?: HospitalCreateOneInput;
-  isVerified?: Boolean;
-  votes?: VoteCreateManyWithoutUserInput;
+export interface HospitalUpsertWithoutReviewsInput {
+  update: HospitalUpdateWithoutReviewsDataInput;
+  create: HospitalCreateWithoutReviewsInput;
 }
 
 export interface HospitalUpdateDataInput {
@@ -1008,97 +903,197 @@ export interface HospitalUpdateDataInput {
   website?: String;
 }
 
-export interface VoteCreateManyWithoutUserInput {
-  create?: VoteCreateWithoutUserInput[] | VoteCreateWithoutUserInput;
-  connect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+export interface HospitalUpdateOneRequiredWithoutReviewsInput {
+  create?: HospitalCreateWithoutReviewsInput;
+  update?: HospitalUpdateWithoutReviewsDataInput;
+  upsert?: HospitalUpsertWithoutReviewsInput;
+  connect?: HospitalWhereUniqueInput;
 }
 
-export interface VoteUpdateManyWithoutHospitalInput {
-  create?: VoteCreateWithoutHospitalInput[] | VoteCreateWithoutHospitalInput;
-  delete?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
-  connect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
-  set?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
-  disconnect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
-  update?:
-    | VoteUpdateWithWhereUniqueWithoutHospitalInput[]
-    | VoteUpdateWithWhereUniqueWithoutHospitalInput;
-  upsert?:
-    | VoteUpsertWithWhereUniqueWithoutHospitalInput[]
-    | VoteUpsertWithWhereUniqueWithoutHospitalInput;
-  deleteMany?: VoteScalarWhereInput[] | VoteScalarWhereInput;
-}
-
-export interface VoteSubscriptionWhereInput {
-  mutation_in?: MutationType[] | MutationType;
-  updatedFields_contains?: String;
-  updatedFields_contains_every?: String[] | String;
-  updatedFields_contains_some?: String[] | String;
-  node?: VoteWhereInput;
-  AND?: VoteSubscriptionWhereInput[] | VoteSubscriptionWhereInput;
-  OR?: VoteSubscriptionWhereInput[] | VoteSubscriptionWhereInput;
-  NOT?: VoteSubscriptionWhereInput[] | VoteSubscriptionWhereInput;
-}
-
-export interface VoteUpdateWithWhereUniqueWithoutHospitalInput {
-  where: VoteWhereUniqueInput;
-  data: VoteUpdateWithoutHospitalDataInput;
-}
-
-export interface HospitalSubscriptionWhereInput {
-  mutation_in?: MutationType[] | MutationType;
-  updatedFields_contains?: String;
-  updatedFields_contains_every?: String[] | String;
-  updatedFields_contains_some?: String[] | String;
-  node?: HospitalWhereInput;
-  AND?: HospitalSubscriptionWhereInput[] | HospitalSubscriptionWhereInput;
-  OR?: HospitalSubscriptionWhereInput[] | HospitalSubscriptionWhereInput;
-  NOT?: HospitalSubscriptionWhereInput[] | HospitalSubscriptionWhereInput;
-}
-
-export interface VoteUpdateWithoutHospitalDataInput {
-  user?: UserUpdateOneRequiredWithoutVotesInput;
-}
-
-export interface UserUpdateInput {
+export interface UserWhereInput {
+  id?: ID_Input;
+  id_not?: ID_Input;
+  id_in?: ID_Input[] | ID_Input;
+  id_not_in?: ID_Input[] | ID_Input;
+  id_lt?: ID_Input;
+  id_lte?: ID_Input;
+  id_gt?: ID_Input;
+  id_gte?: ID_Input;
+  id_contains?: ID_Input;
+  id_not_contains?: ID_Input;
+  id_starts_with?: ID_Input;
+  id_not_starts_with?: ID_Input;
+  id_ends_with?: ID_Input;
+  id_not_ends_with?: ID_Input;
   name?: String;
+  name_not?: String;
+  name_in?: String[] | String;
+  name_not_in?: String[] | String;
+  name_lt?: String;
+  name_lte?: String;
+  name_gt?: String;
+  name_gte?: String;
+  name_contains?: String;
+  name_not_contains?: String;
+  name_starts_with?: String;
+  name_not_starts_with?: String;
+  name_ends_with?: String;
+  name_not_ends_with?: String;
   email?: String;
+  email_not?: String;
+  email_in?: String[] | String;
+  email_not_in?: String[] | String;
+  email_lt?: String;
+  email_lte?: String;
+  email_gt?: String;
+  email_gte?: String;
+  email_contains?: String;
+  email_not_contains?: String;
+  email_starts_with?: String;
+  email_not_starts_with?: String;
+  email_ends_with?: String;
+  email_not_ends_with?: String;
   password?: String;
+  password_not?: String;
+  password_in?: String[] | String;
+  password_not_in?: String[] | String;
+  password_lt?: String;
+  password_lte?: String;
+  password_gt?: String;
+  password_gte?: String;
+  password_contains?: String;
+  password_not_contains?: String;
+  password_starts_with?: String;
+  password_not_starts_with?: String;
+  password_ends_with?: String;
+  password_not_ends_with?: String;
   status?: Role;
-  institution?: HospitalUpdateOneInput;
+  status_not?: Role;
+  status_in?: Role[] | Role;
+  status_not_in?: Role[] | Role;
+  institution?: HospitalWhereInput;
   isVerified?: Boolean;
-  reviews?: ReviewUpdateManyWithoutUserInput;
-  votes?: VoteUpdateManyWithoutUserInput;
+  isVerified_not?: Boolean;
+  reviews_every?: ReviewWhereInput;
+  reviews_some?: ReviewWhereInput;
+  reviews_none?: ReviewWhereInput;
+  votes_every?: VoteWhereInput;
+  votes_some?: VoteWhereInput;
+  votes_none?: VoteWhereInput;
+  AND?: UserWhereInput[] | UserWhereInput;
+  OR?: UserWhereInput[] | UserWhereInput;
+  NOT?: UserWhereInput[] | UserWhereInput;
 }
 
-export interface UserUpdateOneRequiredWithoutVotesInput {
-  create?: UserCreateWithoutVotesInput;
-  update?: UserUpdateWithoutVotesDataInput;
-  upsert?: UserUpsertWithoutVotesInput;
-  connect?: UserWhereUniqueInput;
+export interface ChatCreateInput {
+  message: String;
+  postedBy: UserCreateOneInput;
 }
 
-export interface ReviewUpdateInput {
-  comment?: String;
-  user?: UserUpdateOneRequiredWithoutReviewsInput;
-  hospital?: HospitalUpdateOneRequiredWithoutReviewsInput;
-}
-
-export interface UserUpdateWithoutVotesDataInput {
-  name?: String;
-  email?: String;
-  password?: String;
-  status?: Role;
-  institution?: HospitalUpdateOneInput;
-  isVerified?: Boolean;
-  reviews?: ReviewUpdateManyWithoutUserInput;
-}
-
-export interface LocationUpdateInput {
+export interface LocationWhereInput {
+  id?: ID_Input;
+  id_not?: ID_Input;
+  id_in?: ID_Input[] | ID_Input;
+  id_not_in?: ID_Input[] | ID_Input;
+  id_lt?: ID_Input;
+  id_lte?: ID_Input;
+  id_gt?: ID_Input;
+  id_gte?: ID_Input;
+  id_contains?: ID_Input;
+  id_not_contains?: ID_Input;
+  id_starts_with?: ID_Input;
+  id_not_starts_with?: ID_Input;
+  id_ends_with?: ID_Input;
+  id_not_ends_with?: ID_Input;
   address?: String;
+  address_not?: String;
+  address_in?: String[] | String;
+  address_not_in?: String[] | String;
+  address_lt?: String;
+  address_lte?: String;
+  address_gt?: String;
+  address_gte?: String;
+  address_contains?: String;
+  address_not_contains?: String;
+  address_starts_with?: String;
+  address_not_starts_with?: String;
+  address_ends_with?: String;
+  address_not_ends_with?: String;
   city?: String;
+  city_not?: String;
+  city_in?: String[] | String;
+  city_not_in?: String[] | String;
+  city_lt?: String;
+  city_lte?: String;
+  city_gt?: String;
+  city_gte?: String;
+  city_contains?: String;
+  city_not_contains?: String;
+  city_starts_with?: String;
+  city_not_starts_with?: String;
+  city_ends_with?: String;
+  city_not_ends_with?: String;
   region?: String;
+  region_not?: String;
+  region_in?: String[] | String;
+  region_not_in?: String[] | String;
+  region_lt?: String;
+  region_lte?: String;
+  region_gt?: String;
+  region_gte?: String;
+  region_contains?: String;
+  region_not_contains?: String;
+  region_starts_with?: String;
+  region_not_starts_with?: String;
+  region_ends_with?: String;
+  region_not_ends_with?: String;
   latitude?: Float;
+  latitude_not?: Float;
+  latitude_in?: Float[] | Float;
+  latitude_not_in?: Float[] | Float;
+  latitude_lt?: Float;
+  latitude_lte?: Float;
+  latitude_gt?: Float;
+  latitude_gte?: Float;
   longitude?: Float;
+  longitude_not?: Float;
+  longitude_in?: Float[] | Float;
+  longitude_not_in?: Float[] | Float;
+  longitude_lt?: Float;
+  longitude_lte?: Float;
+  longitude_gt?: Float;
+  longitude_gte?: Float;
+  AND?: LocationWhereInput[] | LocationWhereInput;
+  OR?: LocationWhereInput[] | LocationWhereInput;
+  NOT?: LocationWhereInput[] | LocationWhereInput;
+}
+
+export interface UserCreateInput {
+  name: String;
+  email: String;
+  password: String;
+  status?: Role;
+  institution?: HospitalCreateOneInput;
+  isVerified?: Boolean;
+  reviews?: ReviewCreateManyWithoutUserInput;
+  votes?: VoteCreateManyWithoutUserInput;
+}
+
+export interface ReviewUpdateWithWhereUniqueWithoutUserInput {
+  where: ReviewWhereUniqueInput;
+  data: ReviewUpdateWithoutUserDataInput;
+}
+
+export interface HospitalCreateInput {
+  name: String;
+  location: LocationCreateOneInput;
+  reviews?: ReviewCreateManyWithoutHospitalInput;
+  votes?: VoteCreateManyWithoutHospitalInput;
+  photoUrl?: String;
+  status?: String;
+  contact?: String;
+  email?: String;
+  website?: String;
 }
 
 export interface ReviewUpdateManyWithoutUserInput {
@@ -1119,23 +1114,162 @@ export interface ReviewUpdateManyWithoutUserInput {
     | ReviewUpdateManyWithWhereNestedInput;
 }
 
-export interface UserUpsertWithoutReviewsInput {
-  update: UserUpdateWithoutReviewsDataInput;
-  create: UserCreateWithoutReviewsInput;
+export interface LocationCreateInput {
+  address?: String;
+  city: String;
+  region: String;
+  latitude: Float;
+  longitude: Float;
 }
 
-export interface ReviewUpdateWithWhereUniqueWithoutUserInput {
+export interface ReviewUpdateWithWhereUniqueWithoutHospitalInput {
   where: ReviewWhereUniqueInput;
-  data: ReviewUpdateWithoutUserDataInput;
+  data: ReviewUpdateWithoutHospitalDataInput;
+}
+
+export interface ReviewCreateWithoutHospitalInput {
+  comment: String;
+  user: UserCreateOneWithoutReviewsInput;
+}
+
+export interface ReviewUpdateWithoutHospitalDataInput {
+  comment?: String;
+  user?: UserUpdateOneRequiredWithoutReviewsInput;
+}
+
+export interface VoteSubscriptionWhereInput {
+  mutation_in?: MutationType[] | MutationType;
+  updatedFields_contains?: String;
+  updatedFields_contains_every?: String[] | String;
+  updatedFields_contains_some?: String[] | String;
+  node?: VoteWhereInput;
+  AND?: VoteSubscriptionWhereInput[] | VoteSubscriptionWhereInput;
+  OR?: VoteSubscriptionWhereInput[] | VoteSubscriptionWhereInput;
+  NOT?: VoteSubscriptionWhereInput[] | VoteSubscriptionWhereInput;
+}
+
+export interface UserUpdateOneRequiredWithoutReviewsInput {
+  create?: UserCreateWithoutReviewsInput;
+  update?: UserUpdateWithoutReviewsDataInput;
+  upsert?: UserUpsertWithoutReviewsInput;
+  connect?: UserWhereUniqueInput;
+}
+
+export interface LocationSubscriptionWhereInput {
+  mutation_in?: MutationType[] | MutationType;
+  updatedFields_contains?: String;
+  updatedFields_contains_every?: String[] | String;
+  updatedFields_contains_some?: String[] | String;
+  node?: LocationWhereInput;
+  AND?: LocationSubscriptionWhereInput[] | LocationSubscriptionWhereInput;
+  OR?: LocationSubscriptionWhereInput[] | LocationSubscriptionWhereInput;
+  NOT?: LocationSubscriptionWhereInput[] | LocationSubscriptionWhereInput;
+}
+
+export interface UserUpdateWithoutReviewsDataInput {
+  name?: String;
+  email?: String;
+  password?: String;
+  status?: Role;
+  institution?: HospitalUpdateOneInput;
+  isVerified?: Boolean;
+  votes?: VoteUpdateManyWithoutUserInput;
+}
+
+export interface VoteCreateInput {
+  hospital: HospitalCreateOneWithoutVotesInput;
+  user: UserCreateOneWithoutVotesInput;
+}
+
+export interface VoteUpdateManyWithoutUserInput {
+  create?: VoteCreateWithoutUserInput[] | VoteCreateWithoutUserInput;
+  delete?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+  connect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+  set?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+  disconnect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+  update?:
+    | VoteUpdateWithWhereUniqueWithoutUserInput[]
+    | VoteUpdateWithWhereUniqueWithoutUserInput;
+  upsert?:
+    | VoteUpsertWithWhereUniqueWithoutUserInput[]
+    | VoteUpsertWithWhereUniqueWithoutUserInput;
+  deleteMany?: VoteScalarWhereInput[] | VoteScalarWhereInput;
+}
+
+export interface ReviewUpdateManyMutationInput {
+  comment?: String;
+}
+
+export interface VoteUpdateWithWhereUniqueWithoutUserInput {
+  where: VoteWhereUniqueInput;
+  data: VoteUpdateWithoutUserDataInput;
+}
+
+export interface LocationUpdateManyMutationInput {
+  address?: String;
+  city?: String;
+  region?: String;
+  latitude?: Float;
+  longitude?: Float;
+}
+
+export interface VoteUpdateWithoutUserDataInput {
+  hospital?: HospitalUpdateOneRequiredWithoutVotesInput;
+}
+
+export interface HospitalUpdateInput {
+  name?: String;
+  location?: LocationUpdateOneRequiredInput;
+  reviews?: ReviewUpdateManyWithoutHospitalInput;
+  votes?: VoteUpdateManyWithoutHospitalInput;
+  photoUrl?: String;
+  status?: String;
+  contact?: String;
+  email?: String;
+  website?: String;
+}
+
+export interface HospitalUpdateOneRequiredWithoutVotesInput {
+  create?: HospitalCreateWithoutVotesInput;
+  update?: HospitalUpdateWithoutVotesDataInput;
+  upsert?: HospitalUpsertWithoutVotesInput;
+  connect?: HospitalWhereUniqueInput;
+}
+
+export interface HospitalUpsertNestedInput {
+  update: HospitalUpdateDataInput;
+  create: HospitalCreateInput;
+}
+
+export interface HospitalUpdateWithoutVotesDataInput {
+  name?: String;
+  location?: LocationUpdateOneRequiredInput;
+  reviews?: ReviewUpdateManyWithoutHospitalInput;
+  photoUrl?: String;
+  status?: String;
+  contact?: String;
+  email?: String;
+  website?: String;
 }
 
 export type VoteWhereUniqueInput = AtLeastOne<{
   id: ID_Input;
 }>;
 
-export interface ReviewUpdateWithoutUserDataInput {
-  comment?: String;
-  hospital?: HospitalUpdateOneRequiredWithoutReviewsInput;
+export interface HospitalUpsertWithoutVotesInput {
+  update: HospitalUpdateWithoutVotesDataInput;
+  create: HospitalCreateWithoutVotesInput;
+}
+
+export interface HospitalCreateOneInput {
+  create?: HospitalCreateInput;
+  connect?: HospitalWhereUniqueInput;
+}
+
+export interface VoteUpsertWithWhereUniqueWithoutUserInput {
+  where: VoteWhereUniqueInput;
+  update: VoteUpdateWithoutUserDataInput;
+  create: VoteCreateWithoutUserInput;
 }
 
 export interface ReviewCreateManyWithoutHospitalInput {
@@ -1145,27 +1279,24 @@ export interface ReviewCreateManyWithoutHospitalInput {
   connect?: ReviewWhereUniqueInput[] | ReviewWhereUniqueInput;
 }
 
-export interface HospitalUpdateOneRequiredWithoutReviewsInput {
-  create?: HospitalCreateWithoutReviewsInput;
-  update?: HospitalUpdateWithoutReviewsDataInput;
-  upsert?: HospitalUpsertWithoutReviewsInput;
-  connect?: HospitalWhereUniqueInput;
-}
-
-export interface HospitalCreateOneInput {
-  create?: HospitalCreateInput;
-  connect?: HospitalWhereUniqueInput;
-}
-
-export interface HospitalUpdateWithoutReviewsDataInput {
-  name?: String;
-  location?: LocationUpdateOneRequiredInput;
-  votes?: VoteUpdateManyWithoutHospitalInput;
-  photoUrl?: String;
-  status?: String;
-  contact?: String;
-  email?: String;
-  website?: String;
+export interface VoteScalarWhereInput {
+  id?: ID_Input;
+  id_not?: ID_Input;
+  id_in?: ID_Input[] | ID_Input;
+  id_not_in?: ID_Input[] | ID_Input;
+  id_lt?: ID_Input;
+  id_lte?: ID_Input;
+  id_gt?: ID_Input;
+  id_gte?: ID_Input;
+  id_contains?: ID_Input;
+  id_not_contains?: ID_Input;
+  id_starts_with?: ID_Input;
+  id_not_starts_with?: ID_Input;
+  id_ends_with?: ID_Input;
+  id_not_ends_with?: ID_Input;
+  AND?: VoteScalarWhereInput[] | VoteScalarWhereInput;
+  OR?: VoteScalarWhereInput[] | VoteScalarWhereInput;
+  NOT?: VoteScalarWhereInput[] | VoteScalarWhereInput;
 }
 
 export interface ReviewSubscriptionWhereInput {
@@ -1179,25 +1310,32 @@ export interface ReviewSubscriptionWhereInput {
   NOT?: ReviewSubscriptionWhereInput[] | ReviewSubscriptionWhereInput;
 }
 
-export interface HospitalUpsertWithoutReviewsInput {
-  update: HospitalUpdateWithoutReviewsDataInput;
-  create: HospitalCreateWithoutReviewsInput;
+export interface UserUpsertWithoutReviewsInput {
+  update: UserUpdateWithoutReviewsDataInput;
+  create: UserCreateWithoutReviewsInput;
 }
 
-export type LocationWhereUniqueInput = AtLeastOne<{
-  id: ID_Input;
-}>;
-
-export interface ReviewUpsertWithWhereUniqueWithoutUserInput {
-  where: ReviewWhereUniqueInput;
-  update: ReviewUpdateWithoutUserDataInput;
-  create: ReviewCreateWithoutUserInput;
+export interface UserUpdateManyMutationInput {
+  name?: String;
+  email?: String;
+  password?: String;
+  status?: Role;
+  isVerified?: Boolean;
 }
 
 export interface ReviewUpsertWithWhereUniqueWithoutHospitalInput {
   where: ReviewWhereUniqueInput;
   update: ReviewUpdateWithoutHospitalDataInput;
   create: ReviewCreateWithoutHospitalInput;
+}
+
+export interface HospitalUpdateManyMutationInput {
+  name?: String;
+  photoUrl?: String;
+  status?: String;
+  contact?: String;
+  email?: String;
+  website?: String;
 }
 
 export interface ReviewScalarWhereInput {
@@ -1234,8 +1372,9 @@ export interface ReviewScalarWhereInput {
   NOT?: ReviewScalarWhereInput[] | ReviewScalarWhereInput;
 }
 
-export interface VoteUpdateWithoutUserDataInput {
-  hospital?: HospitalUpdateOneRequiredWithoutVotesInput;
+export interface UserUpsertWithoutVotesInput {
+  update: UserUpdateWithoutVotesDataInput;
+  create: UserCreateWithoutVotesInput;
 }
 
 export interface ReviewUpdateManyWithWhereNestedInput {
@@ -1243,48 +1382,60 @@ export interface ReviewUpdateManyWithWhereNestedInput {
   data: ReviewUpdateManyDataInput;
 }
 
-export interface UserCreateOneWithoutReviewsInput {
-  create?: UserCreateWithoutReviewsInput;
+export interface UserCreateOneInput {
+  create?: UserCreateInput;
   connect?: UserWhereUniqueInput;
-}
-
-export interface VoteScalarWhereInput {
-  id?: ID_Input;
-  id_not?: ID_Input;
-  id_in?: ID_Input[] | ID_Input;
-  id_not_in?: ID_Input[] | ID_Input;
-  id_lt?: ID_Input;
-  id_lte?: ID_Input;
-  id_gt?: ID_Input;
-  id_gte?: ID_Input;
-  id_contains?: ID_Input;
-  id_not_contains?: ID_Input;
-  id_starts_with?: ID_Input;
-  id_not_starts_with?: ID_Input;
-  id_ends_with?: ID_Input;
-  id_not_ends_with?: ID_Input;
-  AND?: VoteScalarWhereInput[] | VoteScalarWhereInput;
-  OR?: VoteScalarWhereInput[] | VoteScalarWhereInput;
-  NOT?: VoteScalarWhereInput[] | VoteScalarWhereInput;
-}
-
-export interface VoteUpsertWithWhereUniqueWithoutHospitalInput {
-  where: VoteWhereUniqueInput;
-  update: VoteUpdateWithoutHospitalDataInput;
-  create: VoteCreateWithoutHospitalInput;
-}
-
-export interface UserUpsertWithoutVotesInput {
-  update: UserUpdateWithoutVotesDataInput;
-  create: UserCreateWithoutVotesInput;
 }
 
 export interface ReviewUpdateManyDataInput {
   comment?: String;
 }
 
-export interface VoteCreateWithoutUserInput {
-  hospital: HospitalCreateOneWithoutVotesInput;
+export interface UserCreateOneWithoutReviewsInput {
+  create?: UserCreateWithoutReviewsInput;
+  connect?: UserWhereUniqueInput;
+}
+
+export interface UserUpdateOneRequiredWithoutVotesInput {
+  create?: UserCreateWithoutVotesInput;
+  update?: UserUpdateWithoutVotesDataInput;
+  upsert?: UserUpsertWithoutVotesInput;
+  connect?: UserWhereUniqueInput;
+}
+
+export interface VoteUpdateWithoutHospitalDataInput {
+  user?: UserUpdateOneRequiredWithoutVotesInput;
+}
+
+export interface VoteUpdateWithWhereUniqueWithoutHospitalInput {
+  where: VoteWhereUniqueInput;
+  data: VoteUpdateWithoutHospitalDataInput;
+}
+
+export interface VoteUpdateManyWithoutHospitalInput {
+  create?: VoteCreateWithoutHospitalInput[] | VoteCreateWithoutHospitalInput;
+  delete?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+  connect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+  set?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+  disconnect?: VoteWhereUniqueInput[] | VoteWhereUniqueInput;
+  update?:
+    | VoteUpdateWithWhereUniqueWithoutHospitalInput[]
+    | VoteUpdateWithWhereUniqueWithoutHospitalInput;
+  upsert?:
+    | VoteUpsertWithWhereUniqueWithoutHospitalInput[]
+    | VoteUpsertWithWhereUniqueWithoutHospitalInput;
+  deleteMany?: VoteScalarWhereInput[] | VoteScalarWhereInput;
+}
+
+export interface ChatSubscriptionWhereInput {
+  mutation_in?: MutationType[] | MutationType;
+  updatedFields_contains?: String;
+  updatedFields_contains_every?: String[] | String;
+  updatedFields_contains_some?: String[] | String;
+  node?: ChatWhereInput;
+  AND?: ChatSubscriptionWhereInput[] | ChatSubscriptionWhereInput;
+  OR?: ChatSubscriptionWhereInput[] | ChatSubscriptionWhereInput;
+  NOT?: ChatSubscriptionWhereInput[] | ChatSubscriptionWhereInput;
 }
 
 export interface LocationCreateOneInput {
@@ -1292,23 +1443,25 @@ export interface LocationCreateOneInput {
   connect?: LocationWhereUniqueInput;
 }
 
-export interface HospitalUpsertWithoutVotesInput {
-  update: HospitalUpdateWithoutVotesDataInput;
-  create: HospitalCreateWithoutVotesInput;
+export interface HospitalUpdateWithoutReviewsDataInput {
+  name?: String;
+  location?: LocationUpdateOneRequiredInput;
+  votes?: VoteUpdateManyWithoutHospitalInput;
+  photoUrl?: String;
+  status?: String;
+  contact?: String;
+  email?: String;
+  website?: String;
 }
 
-export interface LocationUpdateManyMutationInput {
-  address?: String;
-  city?: String;
-  region?: String;
-  latitude?: Float;
-  longitude?: Float;
+export interface UserUpsertNestedInput {
+  update: UserUpdateDataInput;
+  create: UserCreateInput;
 }
 
-export interface VoteCreateInput {
-  hospital: HospitalCreateOneWithoutVotesInput;
-  user: UserCreateOneWithoutVotesInput;
-}
+export type LocationWhereUniqueInput = AtLeastOne<{
+  id: ID_Input;
+}>;
 
 export interface NodeNode {
   id: ID_Output;
@@ -1330,29 +1483,20 @@ export interface VotePreviousValuesSubscription
   id: () => Promise<AsyncIterator<ID_Output>>;
 }
 
-export interface UserSubscriptionPayload {
-  mutation: MutationType;
-  node: User;
-  updatedFields: String[];
-  previousValues: UserPreviousValues;
+export interface AggregateHospital {
+  count: Int;
 }
 
-export interface UserSubscriptionPayloadPromise
-  extends Promise<UserSubscriptionPayload>,
+export interface AggregateHospitalPromise
+  extends Promise<AggregateHospital>,
     Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = UserPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = UserPreviousValuesPromise>() => T;
+  count: () => Promise<Int>;
 }
 
-export interface UserSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<UserSubscriptionPayload>>,
+export interface AggregateHospitalSubscription
+  extends Promise<AsyncIterator<AggregateHospital>>,
     Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = UserSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = UserPreviousValuesSubscription>() => T;
+  count: () => Promise<AsyncIterator<Int>>;
 }
 
 export interface ReviewPreviousValues {
@@ -1374,45 +1518,6 @@ export interface ReviewPreviousValuesSubscription
   comment: () => Promise<AsyncIterator<String>>;
 }
 
-export interface AggregateHospital {
-  count: Int;
-}
-
-export interface AggregateHospitalPromise
-  extends Promise<AggregateHospital>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateHospitalSubscription
-  extends Promise<AsyncIterator<AggregateHospital>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface PageInfo {
-  hasNextPage: Boolean;
-  hasPreviousPage: Boolean;
-  startCursor?: String;
-  endCursor?: String;
-}
-
-export interface PageInfoPromise extends Promise<PageInfo>, Fragmentable {
-  hasNextPage: () => Promise<Boolean>;
-  hasPreviousPage: () => Promise<Boolean>;
-  startCursor: () => Promise<String>;
-  endCursor: () => Promise<String>;
-}
-
-export interface PageInfoSubscription
-  extends Promise<AsyncIterator<PageInfo>>,
-    Fragmentable {
-  hasNextPage: () => Promise<AsyncIterator<Boolean>>;
-  hasPreviousPage: () => Promise<AsyncIterator<Boolean>>;
-  startCursor: () => Promise<AsyncIterator<String>>;
-  endCursor: () => Promise<AsyncIterator<String>>;
-}
-
 export interface HospitalEdge {
   node: Hospital;
   cursor: String;
@@ -1430,201 +1535,6 @@ export interface HospitalEdgeSubscription
     Fragmentable {
   node: <T = HospitalSubscription>() => T;
   cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface VoteConnection {
-  pageInfo: PageInfo;
-  edges: VoteEdge[];
-}
-
-export interface VoteConnectionPromise
-  extends Promise<VoteConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<VoteEdge>>() => T;
-  aggregate: <T = AggregateVotePromise>() => T;
-}
-
-export interface VoteConnectionSubscription
-  extends Promise<AsyncIterator<VoteConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<VoteEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateVoteSubscription>() => T;
-}
-
-export interface AggregateVote {
-  count: Int;
-}
-
-export interface AggregateVotePromise
-  extends Promise<AggregateVote>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateVoteSubscription
-  extends Promise<AsyncIterator<AggregateVote>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface UserEdge {
-  node: User;
-  cursor: String;
-}
-
-export interface UserEdgePromise extends Promise<UserEdge>, Fragmentable {
-  node: <T = UserPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface UserEdgeSubscription
-  extends Promise<AsyncIterator<UserEdge>>,
-    Fragmentable {
-  node: <T = UserSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface HospitalConnection {
-  pageInfo: PageInfo;
-  edges: HospitalEdge[];
-}
-
-export interface HospitalConnectionPromise
-  extends Promise<HospitalConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<HospitalEdge>>() => T;
-  aggregate: <T = AggregateHospitalPromise>() => T;
-}
-
-export interface HospitalConnectionSubscription
-  extends Promise<AsyncIterator<HospitalConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<HospitalEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateHospitalSubscription>() => T;
-}
-
-export interface VoteSubscriptionPayload {
-  mutation: MutationType;
-  node: Vote;
-  updatedFields: String[];
-  previousValues: VotePreviousValues;
-}
-
-export interface VoteSubscriptionPayloadPromise
-  extends Promise<VoteSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = VotePromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = VotePreviousValuesPromise>() => T;
-}
-
-export interface VoteSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<VoteSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = VoteSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = VotePreviousValuesSubscription>() => T;
-}
-
-export interface Location {
-  id: ID_Output;
-  address?: String;
-  city: String;
-  region: String;
-  latitude: Float;
-  longitude: Float;
-}
-
-export interface LocationPromise extends Promise<Location>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  address: () => Promise<String>;
-  city: () => Promise<String>;
-  region: () => Promise<String>;
-  latitude: () => Promise<Float>;
-  longitude: () => Promise<Float>;
-}
-
-export interface LocationSubscription
-  extends Promise<AsyncIterator<Location>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  address: () => Promise<AsyncIterator<String>>;
-  city: () => Promise<AsyncIterator<String>>;
-  region: () => Promise<AsyncIterator<String>>;
-  latitude: () => Promise<AsyncIterator<Float>>;
-  longitude: () => Promise<AsyncIterator<Float>>;
-}
-
-export interface ReviewEdge {
-  node: Review;
-  cursor: String;
-}
-
-export interface ReviewEdgePromise extends Promise<ReviewEdge>, Fragmentable {
-  node: <T = ReviewPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface ReviewEdgeSubscription
-  extends Promise<AsyncIterator<ReviewEdge>>,
-    Fragmentable {
-  node: <T = ReviewSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface Vote {
-  id: ID_Output;
-}
-
-export interface VotePromise extends Promise<Vote>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  hospital: <T = HospitalPromise>() => T;
-  user: <T = UserPromise>() => T;
-}
-
-export interface VoteSubscription
-  extends Promise<AsyncIterator<Vote>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  hospital: <T = HospitalSubscription>() => T;
-  user: <T = UserSubscription>() => T;
-}
-
-export interface UserPreviousValues {
-  id: ID_Output;
-  name: String;
-  email: String;
-  password: String;
-  status: Role;
-  isVerified: Boolean;
-}
-
-export interface UserPreviousValuesPromise
-  extends Promise<UserPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  email: () => Promise<String>;
-  password: () => Promise<String>;
-  status: () => Promise<Role>;
-  isVerified: () => Promise<Boolean>;
-}
-
-export interface UserPreviousValuesSubscription
-  extends Promise<AsyncIterator<UserPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  email: () => Promise<AsyncIterator<String>>;
-  password: () => Promise<AsyncIterator<String>>;
-  status: () => Promise<AsyncIterator<Role>>;
-  isVerified: () => Promise<AsyncIterator<Boolean>>;
 }
 
 export interface Hospital {
@@ -1708,6 +1618,278 @@ export interface HospitalSubscription
   website: () => Promise<AsyncIterator<String>>;
 }
 
+export interface HospitalConnection {
+  pageInfo: PageInfo;
+  edges: HospitalEdge[];
+}
+
+export interface HospitalConnectionPromise
+  extends Promise<HospitalConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<HospitalEdge>>() => T;
+  aggregate: <T = AggregateHospitalPromise>() => T;
+}
+
+export interface HospitalConnectionSubscription
+  extends Promise<AsyncIterator<HospitalConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<HospitalEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateHospitalSubscription>() => T;
+}
+
+export interface AggregateVote {
+  count: Int;
+}
+
+export interface AggregateVotePromise
+  extends Promise<AggregateVote>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateVoteSubscription
+  extends Promise<AsyncIterator<AggregateVote>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface UserSubscriptionPayload {
+  mutation: MutationType;
+  node: User;
+  updatedFields: String[];
+  previousValues: UserPreviousValues;
+}
+
+export interface UserSubscriptionPayloadPromise
+  extends Promise<UserSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = UserPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = UserPreviousValuesPromise>() => T;
+}
+
+export interface UserSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<UserSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = UserSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = UserPreviousValuesSubscription>() => T;
+}
+
+export interface VoteConnection {
+  pageInfo: PageInfo;
+  edges: VoteEdge[];
+}
+
+export interface VoteConnectionPromise
+  extends Promise<VoteConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<VoteEdge>>() => T;
+  aggregate: <T = AggregateVotePromise>() => T;
+}
+
+export interface VoteConnectionSubscription
+  extends Promise<AsyncIterator<VoteConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<VoteEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateVoteSubscription>() => T;
+}
+
+export interface AggregateChat {
+  count: Int;
+}
+
+export interface AggregateChatPromise
+  extends Promise<AggregateChat>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateChatSubscription
+  extends Promise<AsyncIterator<AggregateChat>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface UserEdge {
+  node: User;
+  cursor: String;
+}
+
+export interface UserEdgePromise extends Promise<UserEdge>, Fragmentable {
+  node: <T = UserPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface UserEdgeSubscription
+  extends Promise<AsyncIterator<UserEdge>>,
+    Fragmentable {
+  node: <T = UserSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface ChatEdge {
+  node: Chat;
+  cursor: String;
+}
+
+export interface ChatEdgePromise extends Promise<ChatEdge>, Fragmentable {
+  node: <T = ChatPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface ChatEdgeSubscription
+  extends Promise<AsyncIterator<ChatEdge>>,
+    Fragmentable {
+  node: <T = ChatSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface Review {
+  id: ID_Output;
+  comment: String;
+}
+
+export interface ReviewPromise extends Promise<Review>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  comment: () => Promise<String>;
+  user: <T = UserPromise>() => T;
+  hospital: <T = HospitalPromise>() => T;
+}
+
+export interface ReviewSubscription
+  extends Promise<AsyncIterator<Review>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  comment: () => Promise<AsyncIterator<String>>;
+  user: <T = UserSubscription>() => T;
+  hospital: <T = HospitalSubscription>() => T;
+}
+
+export interface PageInfo {
+  hasNextPage: Boolean;
+  hasPreviousPage: Boolean;
+  startCursor?: String;
+  endCursor?: String;
+}
+
+export interface PageInfoPromise extends Promise<PageInfo>, Fragmentable {
+  hasNextPage: () => Promise<Boolean>;
+  hasPreviousPage: () => Promise<Boolean>;
+  startCursor: () => Promise<String>;
+  endCursor: () => Promise<String>;
+}
+
+export interface PageInfoSubscription
+  extends Promise<AsyncIterator<PageInfo>>,
+    Fragmentable {
+  hasNextPage: () => Promise<AsyncIterator<Boolean>>;
+  hasPreviousPage: () => Promise<AsyncIterator<Boolean>>;
+  startCursor: () => Promise<AsyncIterator<String>>;
+  endCursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface ReviewEdge {
+  node: Review;
+  cursor: String;
+}
+
+export interface ReviewEdgePromise extends Promise<ReviewEdge>, Fragmentable {
+  node: <T = ReviewPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface ReviewEdgeSubscription
+  extends Promise<AsyncIterator<ReviewEdge>>,
+    Fragmentable {
+  node: <T = ReviewSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface Chat {
+  id: ID_Output;
+  message: String;
+  createdAt: DateTimeOutput;
+}
+
+export interface ChatPromise extends Promise<Chat>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  message: () => Promise<String>;
+  postedBy: <T = UserPromise>() => T;
+  createdAt: () => Promise<DateTimeOutput>;
+}
+
+export interface ChatSubscription
+  extends Promise<AsyncIterator<Chat>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  message: () => Promise<AsyncIterator<String>>;
+  postedBy: <T = UserSubscription>() => T;
+  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
+}
+
+export interface UserPreviousValues {
+  id: ID_Output;
+  name: String;
+  email: String;
+  password: String;
+  status: Role;
+  isVerified: Boolean;
+}
+
+export interface UserPreviousValuesPromise
+  extends Promise<UserPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  email: () => Promise<String>;
+  password: () => Promise<String>;
+  status: () => Promise<Role>;
+  isVerified: () => Promise<Boolean>;
+}
+
+export interface UserPreviousValuesSubscription
+  extends Promise<AsyncIterator<UserPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  email: () => Promise<AsyncIterator<String>>;
+  password: () => Promise<AsyncIterator<String>>;
+  status: () => Promise<AsyncIterator<Role>>;
+  isVerified: () => Promise<AsyncIterator<Boolean>>;
+}
+
+export interface ChatSubscriptionPayload {
+  mutation: MutationType;
+  node: Chat;
+  updatedFields: String[];
+  previousValues: ChatPreviousValues;
+}
+
+export interface ChatSubscriptionPayloadPromise
+  extends Promise<ChatSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = ChatPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = ChatPreviousValuesPromise>() => T;
+}
+
+export interface ChatSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<ChatSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = ChatSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = ChatPreviousValuesSubscription>() => T;
+}
+
 export interface AggregateLocation {
   count: Int;
 }
@@ -1722,6 +1904,95 @@ export interface AggregateLocationSubscription
   extends Promise<AsyncIterator<AggregateLocation>>,
     Fragmentable {
   count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface ChatPreviousValues {
+  id: ID_Output;
+  message: String;
+  createdAt: DateTimeOutput;
+}
+
+export interface ChatPreviousValuesPromise
+  extends Promise<ChatPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  message: () => Promise<String>;
+  createdAt: () => Promise<DateTimeOutput>;
+}
+
+export interface ChatPreviousValuesSubscription
+  extends Promise<AsyncIterator<ChatPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  message: () => Promise<AsyncIterator<String>>;
+  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
+}
+
+export interface LocationConnection {
+  pageInfo: PageInfo;
+  edges: LocationEdge[];
+}
+
+export interface LocationConnectionPromise
+  extends Promise<LocationConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<LocationEdge>>() => T;
+  aggregate: <T = AggregateLocationPromise>() => T;
+}
+
+export interface LocationConnectionSubscription
+  extends Promise<AsyncIterator<LocationConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<LocationEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateLocationSubscription>() => T;
+}
+
+export interface ChatConnection {
+  pageInfo: PageInfo;
+  edges: ChatEdge[];
+}
+
+export interface ChatConnectionPromise
+  extends Promise<ChatConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<ChatEdge>>() => T;
+  aggregate: <T = AggregateChatPromise>() => T;
+}
+
+export interface ChatConnectionSubscription
+  extends Promise<AsyncIterator<ChatConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<ChatEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateChatSubscription>() => T;
+}
+
+export interface VoteSubscriptionPayload {
+  mutation: MutationType;
+  node: Vote;
+  updatedFields: String[];
+  previousValues: VotePreviousValues;
+}
+
+export interface VoteSubscriptionPayloadPromise
+  extends Promise<VoteSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = VotePromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = VotePreviousValuesPromise>() => T;
+}
+
+export interface VoteSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<VoteSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = VoteSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = VotePreviousValuesSubscription>() => T;
 }
 
 export interface HospitalSubscriptionPayload {
@@ -1749,25 +2020,20 @@ export interface HospitalSubscriptionPayloadSubscription
   previousValues: <T = HospitalPreviousValuesSubscription>() => T;
 }
 
-export interface LocationConnection {
-  pageInfo: PageInfo;
-  edges: LocationEdge[];
+export interface AggregateUser {
+  count: Int;
 }
 
-export interface LocationConnectionPromise
-  extends Promise<LocationConnection>,
+export interface AggregateUserPromise
+  extends Promise<AggregateUser>,
     Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<LocationEdge>>() => T;
-  aggregate: <T = AggregateLocationPromise>() => T;
+  count: () => Promise<Int>;
 }
 
-export interface LocationConnectionSubscription
-  extends Promise<AsyncIterator<LocationConnection>>,
+export interface AggregateUserSubscription
+  extends Promise<AsyncIterator<AggregateUser>>,
     Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<LocationEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateLocationSubscription>() => T;
+  count: () => Promise<AsyncIterator<Int>>;
 }
 
 export interface HospitalPreviousValues {
@@ -1807,43 +2073,6 @@ export interface HospitalPreviousValuesSubscription
   website: () => Promise<AsyncIterator<String>>;
 }
 
-export interface AggregateUser {
-  count: Int;
-}
-
-export interface AggregateUserPromise
-  extends Promise<AggregateUser>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateUserSubscription
-  extends Promise<AsyncIterator<AggregateUser>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface Review {
-  id: ID_Output;
-  comment: String;
-}
-
-export interface ReviewPromise extends Promise<Review>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  comment: () => Promise<String>;
-  user: <T = UserPromise>() => T;
-  hospital: <T = HospitalPromise>() => T;
-}
-
-export interface ReviewSubscription
-  extends Promise<AsyncIterator<Review>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  comment: () => Promise<AsyncIterator<String>>;
-  user: <T = UserSubscription>() => T;
-  hospital: <T = HospitalSubscription>() => T;
-}
-
 export interface AggregateReview {
   count: Int;
 }
@@ -1858,6 +2087,35 @@ export interface AggregateReviewSubscription
   extends Promise<AsyncIterator<AggregateReview>>,
     Fragmentable {
   count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface Location {
+  id: ID_Output;
+  address?: String;
+  city: String;
+  region: String;
+  latitude: Float;
+  longitude: Float;
+}
+
+export interface LocationPromise extends Promise<Location>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  address: () => Promise<String>;
+  city: () => Promise<String>;
+  region: () => Promise<String>;
+  latitude: () => Promise<Float>;
+  longitude: () => Promise<Float>;
+}
+
+export interface LocationSubscription
+  extends Promise<AsyncIterator<Location>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  address: () => Promise<AsyncIterator<String>>;
+  city: () => Promise<AsyncIterator<String>>;
+  region: () => Promise<AsyncIterator<String>>;
+  latitude: () => Promise<AsyncIterator<Float>>;
+  longitude: () => Promise<AsyncIterator<Float>>;
 }
 
 export interface ReviewConnection {
@@ -1879,31 +2137,6 @@ export interface ReviewConnectionSubscription
   pageInfo: <T = PageInfoSubscription>() => T;
   edges: <T = Promise<AsyncIterator<ReviewEdgeSubscription>>>() => T;
   aggregate: <T = AggregateReviewSubscription>() => T;
-}
-
-export interface ReviewSubscriptionPayload {
-  mutation: MutationType;
-  node: Review;
-  updatedFields: String[];
-  previousValues: ReviewPreviousValues;
-}
-
-export interface ReviewSubscriptionPayloadPromise
-  extends Promise<ReviewSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = ReviewPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = ReviewPreviousValuesPromise>() => T;
-}
-
-export interface ReviewSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<ReviewSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = ReviewSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = ReviewPreviousValuesSubscription>() => T;
 }
 
 export interface User {
@@ -1981,6 +2214,49 @@ export interface UserSubscription
   ) => T;
 }
 
+export interface ReviewSubscriptionPayload {
+  mutation: MutationType;
+  node: Review;
+  updatedFields: String[];
+  previousValues: ReviewPreviousValues;
+}
+
+export interface ReviewSubscriptionPayloadPromise
+  extends Promise<ReviewSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = ReviewPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = ReviewPreviousValuesPromise>() => T;
+}
+
+export interface ReviewSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<ReviewSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = ReviewSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = ReviewPreviousValuesSubscription>() => T;
+}
+
+export interface Vote {
+  id: ID_Output;
+}
+
+export interface VotePromise extends Promise<Vote>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  hospital: <T = HospitalPromise>() => T;
+  user: <T = UserPromise>() => T;
+}
+
+export interface VoteSubscription
+  extends Promise<AsyncIterator<Vote>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  hospital: <T = HospitalSubscription>() => T;
+  user: <T = UserSubscription>() => T;
+}
+
 export interface LocationPreviousValues {
   id: ID_Output;
   address?: String;
@@ -2035,6 +2311,23 @@ export interface LocationSubscriptionPayloadSubscription
   node: <T = LocationSubscription>() => T;
   updatedFields: () => Promise<AsyncIterator<String[]>>;
   previousValues: <T = LocationPreviousValuesSubscription>() => T;
+}
+
+export interface VoteEdge {
+  node: Vote;
+  cursor: String;
+}
+
+export interface VoteEdgePromise extends Promise<VoteEdge>, Fragmentable {
+  node: <T = VotePromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface VoteEdgeSubscription
+  extends Promise<AsyncIterator<VoteEdge>>,
+    Fragmentable {
+  node: <T = VoteSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
 }
 
 export interface LocationEdge {
@@ -2093,33 +2386,33 @@ export interface UserConnectionSubscription
   aggregate: <T = AggregateUserSubscription>() => T;
 }
 
-export interface VoteEdge {
-  node: Vote;
-  cursor: String;
-}
-
-export interface VoteEdgePromise extends Promise<VoteEdge>, Fragmentable {
-  node: <T = VotePromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface VoteEdgeSubscription
-  extends Promise<AsyncIterator<VoteEdge>>,
-    Fragmentable {
-  node: <T = VoteSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
+/*
+The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). 
+*/
+export type Float = number;
 
 /*
-The `Boolean` scalar type represents `true` or `false`.
+The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
 */
-export type Boolean = boolean;
+export type Int = number;
 
 /*
 The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
 */
 export type ID_Input = string | number;
 export type ID_Output = string;
+
+/*
+The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+*/
+export type String = string;
+
+export type Long = string;
+
+/*
+The `Boolean` scalar type represents `true` or `false`.
+*/
+export type Boolean = boolean;
 
 /*
 DateTime scalar input type, allowing Date
@@ -2130,23 +2423,6 @@ export type DateTimeInput = Date | string;
 DateTime scalar output type, which is always a string
 */
 export type DateTimeOutput = string;
-
-/*
-The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
-*/
-export type Int = number;
-
-export type Long = string;
-
-/*
-The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
-*/
-export type String = string;
-
-/*
-The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). 
-*/
-export type Float = number;
 
 /**
  * Model Metadata
@@ -2171,6 +2447,10 @@ export const models: Model[] = [
   },
   {
     name: "Vote",
+    embedded: false
+  },
+  {
+    name: "Chat",
     embedded: false
   },
   {

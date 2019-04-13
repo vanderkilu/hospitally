@@ -106,6 +106,14 @@ function newVote(parent, args, context, info) {
         hospital:  {connect: {id: args.hospital}}
     })
 }
+
+function newChat(parent, args, context, info) {
+    const userId = getUserId(context)
+    return context.prisma.createChat({
+        message: args.message,
+        postedBy: {connect: {id: userId}}
+    })
+}
 module.exports = {
     newHospital,
     updateHospital,

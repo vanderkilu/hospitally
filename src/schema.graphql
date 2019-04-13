@@ -19,6 +19,7 @@ type Mutation {
     login(email: String!, password:String!): AuthPayload
     newReview(comment: String, hospital: ID!): Review!
     newVote(hospital: ID!): Vote!
+    newChat(message: String!): Chat!
     
 }
 type Hospital {
@@ -75,4 +76,10 @@ type Vote {
     id: ID!
     hospital: Hospital!
     user: User!
+}
+
+type Chat {
+    id: ID! 
+    message: String!
+    postedBy: User!
 }
