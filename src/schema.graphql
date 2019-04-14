@@ -9,7 +9,7 @@ type Query {
 type Mutation {
     newHospital(name: String!, locationId: ID!,website:String,photoUrl:String,
                 status: String, contact: String, email: String): Hospital!
-    updateHospital(id: ID!, name: String, photoUrl: String, photoUrl:String,website:String,
+    updateHospital(id: ID!, name: String, photoUrl: String,website:String,
                     status: String, contact: String, email: String): Hospital!
     deleteHospital(id: ID): Hospital!
     newLocation(address: String, city: String!, 

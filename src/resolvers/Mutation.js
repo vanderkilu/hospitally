@@ -16,7 +16,7 @@ function newHospital(parent, args, context, info) {
 }
 
 async function updateHospital(parent, args, context, info) {
-    const updatedHospital = await context.prisma.updateHospital({
+    return  context.prisma.updateHospital({
         data: {
             name: args.name,
             photoUrl: args.photoUrl,
@@ -29,7 +29,6 @@ async function updateHospital(parent, args, context, info) {
             id: args.id
         }
     })
-    return updatedHospital
 }
 
 async function deleteHospital(parent, args, context, info) {
