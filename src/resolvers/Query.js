@@ -25,9 +25,14 @@ function nearestHospital(parent, args,context, info) {
     return null    
 }
 
+function users(parent, args, context, info) {
+    return context.prisma.users()
+}
+
 module.exports = {
     hospital,
     hospitals,
     locations,
-    hospitalsByCity
+    hospitalsByCity,
+    users
 }

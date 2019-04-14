@@ -4,6 +4,7 @@ type Query {
     locations: [Location!]!
     hospitalsByCity(city: String): [Hospital!]!
     nearestHospital(latitude: Float!, longitude:Float!): Hospital
+    users: [User!]!
 }
 type Mutation {
     newHospital(name: String!, locationId: ID!,website:String,photoUrl:String,
